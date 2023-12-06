@@ -1,9 +1,9 @@
 from collections import defaultdict
+import sys
 
 filename = "inputs\level5_input.txt"
 
 mapping_dict = defaultdict(lambda: defaultdict(list))
-min_location = 10**12
 
 with open(filename) as file:
     lines = [line.rstrip() for line in file]
@@ -12,6 +12,7 @@ with open(filename) as file:
     for line in lines:
         if "seeds" in line:
             seed_nums = list(map(int, line.split(" ")[1:]))
+            seed_nums = [seed_nums[i : i + 2] for i in range(0, len(seed_nums) - 2, 2)]
             mapping_dict["seeds"] = seed_nums
         elif "map" in line:
             map_select = line.split(" ")[0].split("-")
@@ -31,31 +32,30 @@ with open(filename) as file:
             mapping_dict[source]["diff"].append(diff)
 
 
-def map_to_range(source, source_type):
-    ranges = mapping_dict[source_type]["ranges"]
+def rev_map(destination, destination_type):
+    diffs = mapping_dict[destination_type]["diff"]
     i = 0
-    for rng in ranges:
-        if source in rng:
-            diff = mapping_dict[source_type]["diff"][i]
-            destination = source + diff
+    for diff in diffs:
+        rng = mapping_dict[destination_type]["ranges"][i]
+        if destination - diff in rng:
+            source = destination - diff
             break
         else:
-            destination = source
+            source = destination
         i += 1
+    return source
 
-    return destination
 
+for location in range(0, 836040384):
+    humidity = rev_map(location, "humidity")
+    temperature = rev_map(humidity, "temperature")
+    light = rev_map(temperature, "light")
+    water = rev_map(light, "water")
+    fertilizer = rev_map(water, "fertilizer")
+    soil = rev_map(fertilizer, "soil")
+    seed = rev_map(soil, "seed")
 
-for seed in mapping_dict["seeds"]:
-    soil = map_to_range(seed, "seed")
-    fertilizer = map_to_range(soil, "soil")
-    water = map_to_range(fertilizer, "fertilizer")
-    light = map_to_range(water, "water")
-    temperature = map_to_range(light, "light")
-    humidity = map_to_range(temperature, "temperature")
-    location = map_to_range(humidity, "humidity")
-
-    if location < min_location:
-        min_location = location
-
-print(min_location)
+    for start_seed, seed_length in mapping_dict["seeds"]:
+        if seed in range(start_seed, start_seed + seed_length):
+            print(location)
+            sys.exit()
