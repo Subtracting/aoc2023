@@ -19,7 +19,6 @@ with open(filename) as file:
             destination = map_select[2]
         elif len(line) > 1:
             values = line.split(" ")
-
             dest_start = int(values[0])
             source_start = int(values[1])
             length = int(values[2])
