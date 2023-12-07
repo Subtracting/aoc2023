@@ -7,15 +7,28 @@ with open(filename) as file:
         line_list = line.rstrip().split(" ")
         hand = line_list[0]
         bid = int(line_list[1])
-
         hands[hand] = bid
 
 winnings = 0
 card_number = len(hands)
 sort_list = [[], [], [], [], [], [], []]
-card_order = "AKQJT98765432"
+card_order = "AKQT98765432J"
 
 for hand in hands:
+    orginal_hand = hand
+    if "J" in hand:
+        if hand == "JJJJJ":
+            hand = "AAAAA"
+        else:
+            max_label = [
+                label
+                for label in hand
+                if hand.count(label)
+                == max([hand.count(label) for label in hand if label != "J"])
+                and label != "J"
+            ][0]
+            hand = hand.replace("J", max_label)
+
     uniques = len(set(hand))
     fiveofakind = uniques == 1
     fourofakind = uniques == 2 and any([hand.count(label) == 4 for label in hand])
@@ -37,13 +50,14 @@ for hand in hands:
 
     for i in range(len(types)):
         if types[i]:
-            sort_list[i].append(hand)
+            sort_list[i].append(orginal_hand)
             break
 
 for same_hands in sort_list:
     sorted_hands = sorted(
         same_hands, key=lambda word: [card_order.index(c) for c in word]
     )
+
     for hand in sorted_hands:
         winnings += hands[hand] * card_number
         card_number -= 1
