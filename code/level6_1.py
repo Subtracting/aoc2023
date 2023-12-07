@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 filename = "inputs\level6_input.txt"
 
 total = 1
