@@ -1,6 +1,3 @@
-from matplotlib import pyplot as plt
-
-
 filename = "inputs\level10_input.txt"
 
 connected = {
@@ -18,6 +15,15 @@ neighbours = {
     (0, 1): ["-", "J", "7"],
     (0, -1): ["-", "F", "L"],
 }
+
+
+left_coords = {
+    (0, 1): (-1, 0),  # right
+    (0, -1): (1, 0),  # left
+    (1, 0): (0, 1),  # down
+    (-1, 0): (0, -1),  # up
+}
+
 
 matrix = []
 
@@ -55,6 +61,12 @@ def get_S(matrix):
                 return (y, x)
 
 
+def mark_left(y, x):
+    if 0 <= (y) < height and 0 <= (x) < width:
+        if connected_matrix[y][x] == 0:
+            connected_matrix[y][x] = -1
+
+
 start_y, start_x = get_S(matrix)
 current_y, current_x = start_y + 1, start_x
 
@@ -72,20 +84,6 @@ while (current_y, current_x) not in seen:
     current_y, current_x = check_connected(current_y, current_x)
     connected_matrix[current_y][current_x] = step
     path_coords.append([current_y, current_x])
-
-left_coords = {
-    (0, 1): (-1, 0),  # right
-    (0, -1): (1, 0),  # left
-    (1, 0): (0, 1),  # down
-    (-1, 0): (0, -1),  # up
-}
-
-
-def mark_left(y, x):
-    if 0 <= (y) < height and 0 <= (x) < width:
-        if connected_matrix[y][x] == 0:
-            connected_matrix[y][x] = -1
-
 
 for coord in range(1, len(path_coords)):
     coord1_y, coord1_x = path_coords[coord]
